@@ -110,14 +110,24 @@ func sshToAlicloudNode(targetReader TargetReader, nodeName, path, user, pathSSKe
 	fmt.Println("Bastion host started.")
 
 	key := filepath.Join(pathSSKeypair, "key")
-	sshCmd := "ssh -i " + key + " -o \"ProxyCommand ssh -i " + key + " -o StrictHostKeyChecking=no -W " + a.PrivateIP + ":22 " + a.BastionSSHUser + "@" + a.BastionIP + "\" " + user + "@" + a.PrivateIP + " -o StrictHostKeyChecking=no"
-	cmd := exec.Command("bash", "-c", sshCmd)
+	sshCmd := buildSshCommandArgs(key, a, user)
+	cmd := exec.Command("ssh", sshCmd...)
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		fmt.Println(err)
 	}
+}
+
+func buildSshCommand(key string, a *AliyunInstanceAttribute, user string) string {
+	sshCmd := "ssh -i " + key + " -o \"ProxyCommand ssh -i " + key + " -o StrictHostKeyChecking=no -W " + a.PrivateIP + ":22 " + a.BastionSSHUser + "@" + a.BastionIP + "\" " + user + "@" + a.PrivateIP + " -o StrictHostKeyChecking=no"
+	return sshCmd
+}
+
+func buildSshCommandArgs(key string, a *AliyunInstanceAttribute, user string) []string {
+	sshCmd := []string{"-i", key, "-o", "ProxyCommand ssh -i " + key + " -o StrictHostKeyChecking=no -W " + a.PrivateIP + ":22 " + a.BastionSSHUser + "@" + a.BastionIP, user + "@" + a.PrivateIP, "-o", "StrictHostKeyChecking=no"}
+	return sshCmd
 }
 
 // fetchAttributes gets all the needed attributes for creating bastion host and its security group with given <nodeName>.
