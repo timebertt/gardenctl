@@ -42,3 +42,28 @@ func Test_buildSshCommandArgs(t *testing.T) {
 		t.Error("commands didn't match")
 	}
 }
+
+func Test_buildAliyunCommand(t *testing.T) {
+	attrs := AliyunInstanceAttribute{
+		InstanceID: "instanceIDD",
+	}
+	command := buildAliyunCommand(&attrs)
+
+	expected := "aliyun ecs DescribeInstanceAttribute --InstanceId=instanceIDD"
+	if expected != command {
+		t.Error("commands didn't match")
+	}
+}
+
+func Test_buildAliyunCommandArgs(t *testing.T) {
+	attrs := AliyunInstanceAttribute{
+		InstanceID: "instanceIDD",
+	}
+	command := buildAliyunCommandArgs(&attrs)
+	fmt.Println(command)
+
+	expected := "ecs DescribeInstanceAttribute --InstanceId=instanceIDD"
+	if expected != strings.Join(command, " ") {
+		t.Error("commands didn't match")
+	}
+}

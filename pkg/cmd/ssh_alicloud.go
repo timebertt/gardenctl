@@ -141,7 +141,7 @@ func (a *AliyunInstanceAttribute) fetchAttributes(targetReader TargetReader, nod
 		checkError(err)
 	}
 
-	res, err := ExecCmdReturnOutput("bash", "-c", "aliyun ecs DescribeInstanceAttribute --InstanceId="+a.InstanceID)
+	res, err := ExecCmdReturnOutput("aliyun", buildAliyunCommand(a))
 	checkError(err)
 	decodedQuery := decodeAndQueryFromJSONString(res)
 
@@ -168,6 +168,13 @@ func (a *AliyunInstanceAttribute) fetchAttributes(targetReader TargetReader, nod
 	a.IoOptimized = "optimized"
 	a.KeyPairName = a.ShootName + "-ssh-publickey"
 	a.InstanceType = a.getMinimumInstanceSpec()
+}
+
+func buildAliyunCommand(a *AliyunInstanceAttribute) string {
+	return "aliyun ecs DescribeInstanceAttribute --InstanceId=" + a.InstanceID
+}
+func buildAliyunCommandArgs(a *AliyunInstanceAttribute) []string {
+	return []string{"ecs", "DescribeInstanceAttribute", "--InstanceId=" + a.InstanceID}
 }
 
 // createBastionHostSecurityGroup finds the or creates a security group for the bastion host.
