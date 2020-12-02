@@ -179,7 +179,7 @@ func buildAliyunCommandArgs(a *AliyunInstanceAttribute) []string {
 
 // createBastionHostSecurityGroup finds the or creates a security group for the bastion host.
 func (a *AliyunInstanceAttribute) createBastionHostSecurityGroup() {
-	res, err := ExecCmdReturnOutput("bash", "-c", "aliyun ecs DescribeSecurityGroups --VpcId="+a.VpcID)
+	res, err := ExecCmdReturnOutput("aliyun", buildBastionCommandArgs(a)...)
 	checkError(err)
 	decodedQuery := decodeAndQueryFromJSONString(res)
 
@@ -236,6 +236,13 @@ func (a *AliyunInstanceAttribute) createBastionHostSecurityGroup() {
 		time.Sleep(time.Second * 10)
 		fmt.Println("Bastion host security group rules configured.")
 	}
+}
+
+func buildBastionCommand(a *AliyunInstanceAttribute) string {
+	return "aliyun ecs DescribeSecurityGroups --VpcId=" + a.VpcID
+}
+func buildBastionCommandArgs(a *AliyunInstanceAttribute) []string {
+	return []string{"ecs", "DescribeSecurityGroups", "--VpcId=" + a.VpcID}
 }
 
 // createBastionHostInstance finds the or creates a bastion host instance.

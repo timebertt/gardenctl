@@ -67,3 +67,18 @@ func Test_buildAliyunCommandArgs(t *testing.T) {
 		t.Error("commands didn't match")
 	}
 }
+
+func Test_buildBastionCommand(t *testing.T) {
+	expected := "aliyun ecs DescribeSecurityGroups --VpcId=VPCIDD"
+	command := buildBastionCommand(&AliyunInstanceAttribute{VpcID: "VPCIDD"})
+	if command != expected {
+		t.Error("commands didn't match")
+	}
+}
+func Test_buildBastionCommandArgs(t *testing.T) {
+	expected := "ecs DescribeSecurityGroups --VpcId=VPCIDD"
+	command := buildBastionCommandArgs(&AliyunInstanceAttribute{VpcID: "VPCIDD"})
+	if expected != strings.Join(command, " ") {
+		t.Error("commands didn't match")
+	}
+}
